@@ -1,0 +1,136 @@
+﻿@{ }
+<section class="container-fluid" style="padding-top:0">
+    <div class="row">
+        <div style="background-image:url('/images/bruno-abatti.jpg');min-height:400px;background-repeat:no-repeat; background-size:cover;color:#fff;">
+            <h1 style="padding:80px 0 0 50px; font-size:5em;">Generative AI Tours</h1>
+            <p style="padding:0 0 0 50px; font-size:1.5em;">Create your own holiday itinerary using AI. Simply select your location, duration and interests!</p>
+        </div>
+    </div>
+</section>
+
+<div class="text-center container">
+    <section>
+        <h2>Get personalised locations inspired by your interests!</h2>
+        <p>What are you looking for in a holiday?</p>
+
+        <div id="interests"></div>
+
+        <hr />
+
+        <p id="prompt"><strong>Prompt:</strong><br /><div id="lblPrompt"></div></p>
+
+        <button id="btnSuggestLocations" class="btn btn-success btn-lg" onclick="SuggestLocations();">Suggest locations</button>
+        <hr />
+
+        <div id="lblResponse" style="text-align:left"></div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        
+        var _interests = '';
+        var _prompt = '';
+
+        UI.AddInterestButtons('interests');
+
+        function SetInterest(interest) {            
+            CreatePrompt();
+        }
+
+        function CreatePrompt() {
+
+            _interests = UI.GetCheckedInterests();
+
+            _prompt = 'Suggest ten holiday destinations for someone, considering their interests in ' + _interests + ' with a short description of why for each.'
+
+            //_prompt += 'Return in json format, a property for location(' + _location + '), another property for duration(' + _days + '), another for interest(' + _interest + '), then another for days as an array containing day objects (each with a day number and array of activities).';
+            //_prompt += 'Wrap locations in double angle brackets ([[]])';
+
+            navigator.clipboard.writeText(_prompt);
+
+            document.getElementById('lblPrompt').innerText = _prompt;
+        }
+
+        function SuggestLocations() {
+
+            if (_interests === '') {
+                alert('Please select interests');
+                return;
+            }
+
+            const postData = async (url, data) => {
+                try {
+
+                    // Disable button and change text
+                    document.getElementById('btnSuggestLocations').innerText = 'Generating..';
+                    document.getElementById('btnSuggestLocations').disabled = true;
+
+                    document.getElementById('lblPrompt').innerText = '';
+
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Error posting data to API');
+                    }
+
+                    const result = await response.json();
+                    //console.log('Post successful:', result);
+
+                    let text = result.choices[0].text;
+
+                    showItinerary(text);
+
+                    // Set button back to normal
+                    document.getElementById('btnSuggestLocations').innerText = 'Suggest locations..';
+                    document.getElementById('btnSuggestLocations').disabled = false;
+
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            };
+
+            // Usage
+            const apiUrl = 'https://localhost:7234/tour';
+            const stringData = _prompt;
+
+            postData(apiUrl, stringData);
+        }
+
+        function showItinerary(text) {
+            var div = document.getElementById("lblResponse");
+
+            // Split the text into individual lines
+            var lines = text.split("\n");
+
+            // Create a variable to store the HTML content
+            var htmlContent = "";
+
+            // Iterate through each line
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+
+                // Check if the line starts with "Day "
+                if (line.startsWith("Day ")) {
+                    // Add the line with bold formatting
+                    htmlContent += "<strong>" + line + "</strong>";
+                } else {
+                    // Add the line without any formatting
+                    htmlContent += line;
+                }
+
+                // Add a line break after each line
+                htmlContent += "<br>";
+            }
+
+            // Set the HTML content of the div
+            div.innerHTML = htmlContent;
+        }
+    </script>
+}

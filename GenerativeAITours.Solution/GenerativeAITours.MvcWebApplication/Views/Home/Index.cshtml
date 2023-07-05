@@ -1,0 +1,225 @@
+﻿@{ }
+<section class="container-fluid" style="padding-top:0">
+    <div class="row">
+        <div style="background-image:url('/images/leonard-cotte-c1Jp-fo53U8-unsplash-400.jpg');min-height:400px;background-repeat:no-repeat; background-size:cover;color:#fff;">
+            <h1 style="padding:80px 0 0 50px; font-size:5em;">Generative AI Tours</h1>
+            <p style="padding:0 0 0 50px; font-size:1.5em;">Create your own holiday itinerary using AI. Simply select your location, duration and interests!</p>
+        </div>
+    </div>
+</section>
+
+<div class="text-center container">
+    <section>
+        <h2>1. Destination</h2>
+        <p>Where would you like to go? Not sure?, get some <a href="/inspiration">inspiration</a>.</p>
+        <div id="cities"></div>
+        <br />
+        <div id="countries"></div>
+    </section>
+
+    <hr />
+
+    <div class="row">
+
+        <div class="col">
+
+            <section>
+                <h2>2. Duration</h2>
+                <p>How many days would you like to stay for?</p>
+                <div id="duration"></div>
+            </section>
+
+        </div>
+
+        <div class="col">
+
+            <section>
+                <h2>3. Interests</h2>
+                <p>What are some of your interests?</p>
+                <div id="interests"></div>
+            </section>
+
+        </div>
+
+    </div>
+
+    <hr />
+
+    <section>
+        <p id="prompt">
+            <strong>Prompt:</strong><br />
+            <div id="lblPrompt"></div>
+        </p>
+        <button id="btnCreateItinerary" class="btn btn-success btn-lg" onclick="CreateItinerary();">Create itinerary</button>
+
+        <h2 id="results-heading"></h2>
+
+    </section>
+
+
+    <section>
+        <div class="row">
+            <div class="col">
+                <div id="lblResponse" style="text-align:left"></div>
+            </div>
+            <div class="col">
+                <div id="map"></div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+@section Scripts
+    {
+    <script>
+
+        var _location = '';
+        var _interests = '';
+        var _days = 0;
+
+        var _prompt = '';
+
+        UI.AddInterestButtons('interests');
+        UI.AddCityButtons('cities');
+        UI.AddCountryButtons('countries');
+        UI.AddDurationButtons('duration');
+
+        //Test
+        //Map.PlotLocations('');
+
+
+
+        function SetLocation(location) {
+            _location = location;
+            CreatePrompt();
+        }
+
+        function SetDays(days) {
+            _days = days;
+            CreatePrompt();
+        }
+
+        function SetInterest(interest) {
+            _interests = UI.GetCheckedInterests();
+            CreatePrompt();
+        }
+
+        function CreatePrompt() {
+            if (_location == '') {
+                alert('Please select a location');
+                return;
+            }
+
+            _prompt = 'Suggest places to visit in ' + _location + '.';
+
+            if (_days > 0) {
+                _prompt += ' Create a ' + _days + ' day itinerary.';
+            }
+
+            if (_interests != '') {
+                _prompt += ' For people with interests in ' + _interests + ', with a brief descriptions of each place.';
+            }
+
+
+            //  Suggest places to visit in Paris.Create a 5 day itinerary.For people interested in Culture.
+
+            //_prompt += 'Return in json format, a property for location(' + _location + '), another property for duration(' + _days + '), another for interest(' + _interest + '), then another for days as an array containing day objects (each with a day number and array of activities).';
+            //_prompt += 'Wrap locations in double angle brackets ([[]])';
+
+            navigator.clipboard.writeText(_prompt);
+
+            document.getElementById('lblPrompt').innerText = _prompt;
+        }
+
+        function CreateItinerary() {
+
+            if (_location === '') {
+                alert('Please select a location');
+                return;
+            }
+
+            const postData = async (url, data) => {
+                try {
+
+                    // Disable button and change text
+                    document.getElementById('btnCreateItinerary').innerText = 'Generating itinerary..';
+                    document.getElementById('btnCreateItinerary').disabled = true;
+
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Error posting data to API');
+                    }
+
+                    const result = await response.json();
+                    //console.log('Post successful:', result);
+
+                    // Show results heading
+                    document.getElementById('results-heading').innerText = 'Itinerary for a ' + _days + ' day visit to ' + _location + ' <br/>for those with an interest in ' + _interests;
+
+                    let text = result.choices[0].text;
+
+                    // Show response from Open AI
+                    //document.getElementById('lblResponse').innerText = text;
+
+                    showItinerary(text);
+
+                    Map.PlotLocations(_location);
+
+                    // Set button back to normal
+                    document.getElementById('btnCreateItinerary').innerText = 'Create itinerary..';
+                    document.getElementById('btnCreateItinerary').disabled = false;
+
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            };
+
+            // Usage
+            const apiUrl = 'https://localhost:7234/tour';
+            const stringData = _prompt;
+
+            postData(apiUrl, stringData);
+        }
+
+        function showItinerary(text) {
+            var div = document.getElementById("lblResponse");
+
+            // Text to be added
+            //var text = "\n\nDay 1:\n\n1. Parque Warner Madrid: This amusement park offers thrilling rides, roller coasters, and other activities for an exciting day out.\n\n2. Palacio Real de Madrid: Explore the beautiful palatial complex, the official residence of the Spanish Royal Family.\n\n3. Madrid Cable Car: Take a scenic cable car ride over the city for stunning views of Madrid.\n\nDay 2:\n\n1. Templo de Debod: Take a walk through this ancient Egyptian temple located in the heart of Madrid.\n\n2. El Retiro Park: Spend the afternoon exploring one of Madrid’s largest parks with its scenic lake, gardens, and monuments.\n\n3. Madrid Rio: Enjoy a walk or a bike ride along the Manzanares River, with stunning views of the city’s skyline.\n\nDay 3:\n\n1. Madrid Zoo Aquarium: Visit this eco-friendly zoo to explore its wide variety of animal species.\n\n2. Madrid Skylounge: Spend the evening up high, with 360-degree views of the city from the roof of the Circulo de Bellas Artes.\n\n3. Tapas Tour: Experience the city’s traditional cuisine on a guided tour of some of Madrid’s best tapas bars.";
+
+            // Split the text into individual lines
+            var lines = text.split("\n");
+
+            // Create a variable to store the HTML content
+            var htmlContent = "";
+
+            // Iterate through each line
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+
+                // Check if the line starts with "Day "
+                if (line.startsWith("Day ")) {
+                    // Add the line with bold formatting
+                    htmlContent += "<strong>" + line + "</strong>";
+                } else {
+                    // Add the line without any formatting
+                    htmlContent += line;
+                }
+
+                // Add a line break after each line
+                htmlContent += "<br>";
+            }
+
+            // Set the HTML content of the div
+            div.innerHTML = htmlContent;
+        }
+    </script>
+}
