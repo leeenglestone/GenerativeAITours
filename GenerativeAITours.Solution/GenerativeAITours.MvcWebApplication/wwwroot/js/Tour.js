@@ -67,6 +67,7 @@ const Tour = {
             'Nice',
             'Orlando',
             'Paris',
+            'Porto',
             'Prague',
             'Rio de Janeiro',
             'Rome',

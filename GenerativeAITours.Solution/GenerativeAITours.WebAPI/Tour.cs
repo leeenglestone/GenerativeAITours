@@ -8,7 +8,7 @@ namespace GenerativeAITours.WebAPI
 
         public string Location { get; set; }
         public int Duration { get; set; }
-        public string Interest { get; set; }
+        public string[] Interests { get; set; }
         public List<ItineraryDay> Days { get; set; }
 
         public static Tour ParseResult(string result)
@@ -22,8 +22,9 @@ namespace GenerativeAITours.WebAPI
 
         }
 
-        //public static List<ItineraryDay> ParseDays(string text)
+        //public static List<Day> ParseDays(string text)
         //{
+
         //    List<ItineraryDay> days = new List<ItineraryDay>();
 
         //    // Split the text into individual lines
@@ -72,11 +73,36 @@ namespace GenerativeAITours.WebAPI
         }
     }
 
+    public class Activity
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
+
     public class ItineraryDay
     {
+        
         public int DayNumber { get; set; }
-        public List<string> Activities { get; set; }
+        public List<Activity> Activities { get; set; }
     }
+
+    public class Itinerary
+    {
+        public string Location { get; set; }
+        public int Duration { get; set; }
+        public List<string> Interests { get; set; }
+        public List<ItineraryDay> Days { get; set; }
+    }
+
+
+
+    //public class ItineraryDay
+    //{
+    //    public int DayNumber { get; set; }
+    //    public List<string> Activities { get; set; }
+    //}
 
     public class Choice
     {

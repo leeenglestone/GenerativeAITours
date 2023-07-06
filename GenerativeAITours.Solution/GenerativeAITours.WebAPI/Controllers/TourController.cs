@@ -25,14 +25,19 @@ namespace GenerativeAITours.WebAPI.Controllers
         {
             try
             {
-                string apiKey = "<Insert Key>";
+                string apiKey = "";
                 string model = "text-davinci-003";
+                //string model = "gpt-3.5-turbo"; 
                 string apiUrl = $"https://api.openai.com/v1/engines/{model}/completions";
+                //string apiUrl = "https://api.openai.com/v1/chat/completions";
 
                 var requestPayload = new
                 {
                     prompt = prompt,
-                    max_tokens = 500,
+                    //max_tokens = 500,
+                    //max_tokens = 1000,
+                    //model = "gpt-3.5-turbo",
+                    max_tokens = 2000,
                     temperature = 0.7,
                     n = 1
                 };
@@ -49,11 +54,11 @@ namespace GenerativeAITours.WebAPI.Controllers
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
 
-                    //var resultText = Tour.GetResultFromOpenAI(responseContent);
-                    //var tour = Tour.ParseResult(resultText);
+                    var resultText = Tour.GetResultFromOpenAI(responseContent);
+                    var tour = Tour.ParseResult(resultText);
 
-                    //return Ok(tour);
-                    return Ok(responseContent);
+                    return Ok(tour);
+                    //return Ok(responseContent);
 
                 }
                 else

@@ -28,6 +28,7 @@ function allLocations() {
         // Europe
         new Location("Amsterdam", 52.3676, 4.9041),
         new Location("Baden", 48.76, 8.22),
+        new Location("Barcelona", 41.3874, 2.1686),
         new Location("Belfast", 54.5973, -5.9301),
         new Location("Berlin", 52.5200, 13.4050),
         new Location("Birmingham", 52.4862, -1.8904),
@@ -60,6 +61,7 @@ function allLocations() {
         new Location("Odense", 55.4038, 10.4024),
         new Location("Oslo", 59.9139, 10.7522),
         new Location("Paris", 48.8566, 2.3522),
+        new Location("Porto", 41.1496, -8.6110),
         new Location("Prague", 50.0755, 14.4378),
         new Location("Reading", 51.4551, -0.9787),
         new Location("Rekyavik", 64.1466, -21.9426),

@@ -85,11 +85,6 @@
         UI.AddCountryButtons('countries');
         UI.AddDurationButtons('duration');
 
-        //Test
-        //Map.PlotLocations('');
-
-
-
         function SetLocation(location) {
             _location = location;
             CreatePrompt();
@@ -121,11 +116,13 @@
                 _prompt += ' For people with interests in ' + _interests + ', with a brief descriptions of each place.';
             }
 
-
             //  Suggest places to visit in Paris.Create a 5 day itinerary.For people interested in Culture.
 
-            //_prompt += 'Return in json format, a property for location(' + _location + '), another property for duration(' + _days + '), another for interest(' + _interest + '), then another for days as an array containing day objects (each with a day number and array of activities).';
-            //_prompt += 'Wrap locations in double angle brackets ([[]])';
+            _prompt += ' Return in json format, a property for location(' + _location + '), another property for duration(' + _days + '), another for interests (' + _interests + '), then another for days as an array containing day objects (each with an increasing day number and array of activities and each activity with its own name, description and latitude, longitude properties).';
+            //_prompt += 'Wrap names of locations in the description property in double angle brackets ([[]])';
+
+
+
 
             navigator.clipboard.writeText(_prompt);
 
@@ -158,20 +155,30 @@
                         throw new Error('Error posting data to API');
                     }
 
+                    console.log('Data sent:', data);
+                    
+
                     const result = await response.json();
-                    //console.log('Post successful:', result);
+                    console.log('Post successful:', result);
+
+
 
                     // Show results heading
-                    document.getElementById('results-heading').innerText = 'Itinerary for a ' + _days + ' day visit to ' + _location + ' <br/>for those with an interest in ' + _interests;
+                    document.getElementById('results-heading').innerHTML = 'Itinerary for a ' + _days + ' day visit to ' + _location + ' <br/>for those with an interest in ' + _interests;
 
-                    let text = result.choices[0].text;
+
+
+                    //let text = result.choices[0].text;
+                    let text = result;
+
+                    console.log('First choice:', text);
 
                     // Show response from Open AI
                     //document.getElementById('lblResponse').innerText = text;
 
                     showItinerary(text);
 
-                    Map.PlotLocations(_location);
+                    Map.PlotLocations(text);
 
                     // Set button back to normal
                     document.getElementById('btnCreateItinerary').innerText = 'Create itinerary..';
@@ -189,11 +196,88 @@
             postData(apiUrl, stringData);
         }
 
-        function showItinerary(text) {
-            var div = document.getElementById("lblResponse");
+        function showItinerary(itinerary) {
 
-            // Text to be added
-            //var text = "\n\nDay 1:\n\n1. Parque Warner Madrid: This amusement park offers thrilling rides, roller coasters, and other activities for an exciting day out.\n\n2. Palacio Real de Madrid: Explore the beautiful palatial complex, the official residence of the Spanish Royal Family.\n\n3. Madrid Cable Car: Take a scenic cable car ride over the city for stunning views of Madrid.\n\nDay 2:\n\n1. Templo de Debod: Take a walk through this ancient Egyptian temple located in the heart of Madrid.\n\n2. El Retiro Park: Spend the afternoon exploring one of Madrid’s largest parks with its scenic lake, gardens, and monuments.\n\n3. Madrid Rio: Enjoy a walk or a bike ride along the Manzanares River, with stunning views of the city’s skyline.\n\nDay 3:\n\n1. Madrid Zoo Aquarium: Visit this eco-friendly zoo to explore its wide variety of animal species.\n\n2. Madrid Skylounge: Spend the evening up high, with 360-degree views of the city from the roof of the Circulo de Bellas Artes.\n\n3. Tapas Tour: Experience the city’s traditional cuisine on a guided tour of some of Madrid’s best tapas bars.";
+            console.log(itinerary);
+
+            const itineraryContainer = document.createElement("div");
+            itineraryContainer.className = "itinerary-container";
+
+            /*
+            const locationHeading = document.createElement("h2");
+            locationHeading.textContent = `Location: ${itinerary.location}`;
+            itineraryContainer.appendChild(locationHeading);
+
+            const durationHeading = document.createElement("h2");
+            durationHeading.textContent = `Duration: ${itinerary.duration} days`;
+            itineraryContainer.appendChild(durationHeading);
+
+            const interestsHeading = document.createElement("h2");
+            interestsHeading.textContent = "Interests:";
+            itineraryContainer.appendChild(interestsHeading);
+
+            const interestsList = document.createElement("ul");
+            interestsList.className = "interests-list";
+            itinerary.interests.forEach(interest => {
+                const interestItem = document.createElement("li");
+                interestItem.textContent = interest;
+                interestsList.appendChild(interestItem);
+            });
+            itineraryContainer.appendChild(interestsList);
+            
+
+            const daysHeading = document.createElement("h2");
+            daysHeading.textContent = "Itinerary:";
+            itineraryContainer.appendChild(daysHeading);
+
+            */
+
+            let activityNumber = 1;
+
+            // For each day
+            itinerary.days.forEach(day => {
+                const dayContainer = document.createElement("div");
+                dayContainer.className = "day-container";
+
+                const dayNumberHeading = document.createElement("h3");
+                dayNumberHeading.textContent = `Day ${day.dayNumber} `;
+                dayContainer.appendChild(dayNumberHeading);
+
+
+                // For each activity
+                day.activities.forEach(activity => {
+
+                    activity.number = activityNumber;
+                    activityNumber++;
+
+
+                    const activityContainer = document.createElement("div");
+                    activityContainer.className = "activity-container";
+
+                    const activityName = document.createElement("h4");
+                    activityName.textContent = activity.number + '. ' + activity.name;
+                    activityContainer.appendChild(activityName);
+
+                    const activityDescription = document.createElement("p");
+                    activityDescription.textContent = activity.description;
+                    activityContainer.appendChild(activityDescription);
+
+                    
+
+
+                    dayContainer.appendChild(activityContainer);
+                });
+
+                itineraryContainer.appendChild(dayContainer);
+            });
+
+
+            var div = document.getElementById("lblResponse");
+            div.appendChild(itineraryContainer);
+
+            /*
+
+            var div = document.getElementById("lblResponse");
 
             // Split the text into individual lines
             var lines = text.split("\n");
@@ -220,6 +304,8 @@
 
             // Set the HTML content of the div
             div.innerHTML = htmlContent;
+
+            */
         }
     </script>
 }
