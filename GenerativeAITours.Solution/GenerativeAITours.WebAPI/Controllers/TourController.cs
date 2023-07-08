@@ -25,6 +25,17 @@ namespace GenerativeAITours.WebAPI.Controllers
         {
             try
             {
+                var promptCache = new PromptCacheLocalFileStorage();
+
+                var cachedResponse = promptCache.GetCachedResponse(prompt);
+
+                if (cachedResponse != null)
+                {
+                    var tour = Tour.ParseResult(cachedResponse);
+                    return Ok(tour);
+                }
+
+
                 string apiKey = "";
                 string model = "text-davinci-003";
                 //string model = "gpt-3.5-turbo"; 
@@ -48,14 +59,19 @@ namespace GenerativeAITours.WebAPI.Controllers
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
 
-                var response = await _httpClient.PostAsync(apiUrl, httpContent);
+                var openAIResponse = await _httpClient.PostAsync(apiUrl, httpContent);
 
-                if (response.IsSuccessStatusCode)
+                if (openAIResponse.IsSuccessStatusCode)
                 {
-                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var responseContent = await openAIResponse.Content.ReadAsStringAsync();
 
                     var resultText = Tour.GetResultFromOpenAI(responseContent);
+                    
+                    promptCache.SavePromptResponse(promptCache.HashPrompt(prompt), resultText);
+                    
                     var tour = Tour.ParseResult(resultText);
+
+                    
 
                     return Ok(tour);
                     //return Ok(responseContent);

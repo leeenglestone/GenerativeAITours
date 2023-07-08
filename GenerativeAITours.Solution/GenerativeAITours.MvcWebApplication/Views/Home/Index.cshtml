@@ -118,7 +118,7 @@
 
             //  Suggest places to visit in Paris.Create a 5 day itinerary.For people interested in Culture.
 
-            _prompt += ' Return in json format, a property for location(' + _location + '), another property for duration(' + _days + '), another for interests (' + _interests + '), then another for days as an array containing day objects (each with an increasing day number and array of activities and each activity with its own name, description and latitude, longitude properties).';
+            _prompt += ' Return in json format, a property for location(' + _location + '), another property for duration(' + _days + '), another for interests (' + _interests + '), then another for days as an array containing day objects (each with an increasing dayNumber property and an array of activities and each activity with its own name, description and latitude, longitude properties).';
             //_prompt += 'Wrap names of locations in the description property in double angle brackets ([[]])';
 
 
@@ -136,13 +136,19 @@
                 return;
             }
 
+            // Clear any existing results
+            // Disable button and change text
+            document.getElementById('results-heading').innerHTML = '';
+            document.getElementById('lblResponse').innerHTML = '';
+
+            document.getElementById('btnCreateItinerary').innerText = 'Generating itinerary..';
+            document.getElementById('btnCreateItinerary').disabled = true;
+
+
             const postData = async (url, data) => {
                 try {
 
-                    // Disable button and change text
-                    document.getElementById('btnCreateItinerary').innerText = 'Generating itinerary..';
-                    document.getElementById('btnCreateItinerary').disabled = true;
-
+                    
                     const response = await fetch(url, {
                         method: 'POST',
                         headers: {
@@ -203,34 +209,7 @@
             const itineraryContainer = document.createElement("div");
             itineraryContainer.className = "itinerary-container";
 
-            /*
-            const locationHeading = document.createElement("h2");
-            locationHeading.textContent = `Location: ${itinerary.location}`;
-            itineraryContainer.appendChild(locationHeading);
-
-            const durationHeading = document.createElement("h2");
-            durationHeading.textContent = `Duration: ${itinerary.duration} days`;
-            itineraryContainer.appendChild(durationHeading);
-
-            const interestsHeading = document.createElement("h2");
-            interestsHeading.textContent = "Interests:";
-            itineraryContainer.appendChild(interestsHeading);
-
-            const interestsList = document.createElement("ul");
-            interestsList.className = "interests-list";
-            itinerary.interests.forEach(interest => {
-                const interestItem = document.createElement("li");
-                interestItem.textContent = interest;
-                interestsList.appendChild(interestItem);
-            });
-            itineraryContainer.appendChild(interestsList);
             
-
-            const daysHeading = document.createElement("h2");
-            daysHeading.textContent = "Itinerary:";
-            itineraryContainer.appendChild(daysHeading);
-
-            */
 
             let activityNumber = 1;
 
