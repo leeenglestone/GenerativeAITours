@@ -56,7 +56,6 @@
 
     </section>
 
-
     <section>
         <div class="row">
             <div class="col">
@@ -77,7 +76,6 @@
         var _location = '';
         var _interests = '';
         var _days = 0;
-
         var _prompt = '';
 
         UI.AddInterestButtons('interests');
@@ -121,9 +119,6 @@
             _prompt += ' Return in json format, a property for location(' + _location + '), another property for duration(' + _days + '), another for interests (' + _interests + '), then another for days as an array containing day objects (each with an increasing dayNumber property and an array of activities and each activity with its own name, description and latitude, longitude properties).';
             //_prompt += 'Wrap names of locations in the description property in double angle brackets ([[]])';
 
-
-
-
             navigator.clipboard.writeText(_prompt);
 
             document.getElementById('lblPrompt').innerText = _prompt;
@@ -144,11 +139,8 @@
             document.getElementById('btnCreateItinerary').innerText = 'Generating itinerary..';
             document.getElementById('btnCreateItinerary').disabled = true;
 
-
             const postData = async (url, data) => {
                 try {
-
-                    
                     const response = await fetch(url, {
                         method: 'POST',
                         headers: {
@@ -162,17 +154,12 @@
                     }
 
                     console.log('Data sent:', data);
-                    
 
                     const result = await response.json();
                     console.log('Post successful:', result);
 
-
-
                     // Show results heading
                     document.getElementById('results-heading').innerHTML = 'Itinerary for a ' + _days + ' day visit to ' + _location + ' <br/>for those with an interest in ' + _interests;
-
-
 
                     //let text = result.choices[0].text;
                     let text = result;
@@ -209,8 +196,6 @@
             const itineraryContainer = document.createElement("div");
             itineraryContainer.className = "itinerary-container";
 
-            
-
             let activityNumber = 1;
 
             // For each day
@@ -222,13 +207,11 @@
                 dayNumberHeading.textContent = `Day ${day.dayNumber} `;
                 dayContainer.appendChild(dayNumberHeading);
 
-
                 // For each activity
                 day.activities.forEach(activity => {
 
                     activity.number = activityNumber;
                     activityNumber++;
-
 
                     const activityContainer = document.createElement("div");
                     activityContainer.className = "activity-container";
@@ -241,7 +224,10 @@
                     activityDescription.textContent = activity.description;
                     activityContainer.appendChild(activityDescription);
 
-                    
+                    const activityImage = document.createElement("img");
+                    activityImage.className = "activity-image";
+                    activityImage.src = '/activities/' + itinerary.location + ' ' + activity.name + '.jpg';
+                    activityContainer.appendChild(activityImage);
 
 
                     dayContainer.appendChild(activityContainer);
@@ -250,41 +236,8 @@
                 itineraryContainer.appendChild(dayContainer);
             });
 
-
             var div = document.getElementById("lblResponse");
             div.appendChild(itineraryContainer);
-
-            /*
-
-            var div = document.getElementById("lblResponse");
-
-            // Split the text into individual lines
-            var lines = text.split("\n");
-
-            // Create a variable to store the HTML content
-            var htmlContent = "";
-
-            // Iterate through each line
-            for (var i = 0; i < lines.length; i++) {
-                var line = lines[i];
-
-                // Check if the line starts with "Day "
-                if (line.startsWith("Day ")) {
-                    // Add the line with bold formatting
-                    htmlContent += "<strong>" + line + "</strong>";
-                } else {
-                    // Add the line without any formatting
-                    htmlContent += line;
-                }
-
-                // Add a line break after each line
-                htmlContent += "<br>";
-            }
-
-            // Set the HTML content of the div
-            div.innerHTML = htmlContent;
-
-            */
         }
     </script>
 }

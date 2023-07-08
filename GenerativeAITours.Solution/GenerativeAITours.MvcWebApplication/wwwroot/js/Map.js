@@ -55,7 +55,8 @@ const Map = {
     },
     GetLocationByLocationName: function (locationName) {
 
-        const locations = allLocations();
+        //const locations = allLocations();
+        const locations = Place.Locations();
 
         for (let i = 0; i < locations.length; i++) {
             if (locations[i].name.toLowerCase() === locationName.toLowerCase()) {
@@ -69,5 +70,6 @@ const Map = {
         return null; // City not found
 
     }
+    
 
 };
