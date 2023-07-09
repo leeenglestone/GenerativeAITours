@@ -30,7 +30,9 @@ body {
 
 #map 
 {
+    margin-bottom:30px;
     min-height:400px;
+    width:100%;
 }
 
 nav.mb-3 {
@@ -73,4 +75,9 @@ h3:not(:first-child) {
 
 img.activity-image{
     max-width:300px;
+}
+
+img.card-img-top
+{
+    height:275px;
 }

@@ -26,7 +26,7 @@ const Map = {
         {
             document.getElementById('map').innerHTML = '';
 
-            map = new L.Map('map', { center: latlng, zoom: 13, layers: [tiles] });
+            map = new L.Map('map', { center: latlng, zoom: 14, layers: [tiles] });
 
             // Add markers for each activity
             json.days.forEach(function (day) {

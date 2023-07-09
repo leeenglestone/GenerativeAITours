@@ -59,11 +59,13 @@
     <section>
         <div class="row">
             <div class="col">
-                <div id="lblResponse" style="text-align:left"></div>
-            </div>
-            <div class="col">
                 <div id="map"></div>
             </div>
+        </div>
+        <div class="row" id="lblResponse">
+            @*<div class="col">*@
+                @*<div id="lblResponse" style="text-align:left"></div>*@
+            @*</div>*@
         </div>
     </section>
 
@@ -107,7 +109,7 @@
             _prompt = 'Suggest places to visit in ' + _location + '.';
 
             if (_days > 0) {
-                _prompt += ' Create a ' + _days + ' day itinerary.';
+                _prompt += ' Create a ' + _days + ' day itinerary containing 3 activities per day.';
             }
 
             if (_interests != '') {
@@ -193,19 +195,24 @@
 
             console.log(itinerary);
 
-            const itineraryContainer = document.createElement("div");
-            itineraryContainer.className = "itinerary-container";
+            document.getElementById('btnCreateItinerary').style.display = "none";
+
+            //const itineraryContainer = document.createElement("div");
+            //itineraryContainer.className = "itinerary-container";
 
             let activityNumber = 1;
 
+            const lblResponse = document.getElementById("lblResponse");
+
             // For each day
             itinerary.days.forEach(day => {
-                const dayContainer = document.createElement("div");
-                dayContainer.className = "day-container";
+                //const dayContainer = document.createElement("div");
+                //dayContainer.className = "day-container";
 
                 const dayNumberHeading = document.createElement("h3");
                 dayNumberHeading.textContent = `Day ${day.dayNumber} `;
-                dayContainer.appendChild(dayNumberHeading);
+                //dayContainer.appendChild(dayNumberHeading);
+                lblResponse.appendChild(dayNumberHeading);
 
                 // For each activity
                 day.activities.forEach(activity => {
@@ -213,6 +220,55 @@
                     activity.number = activityNumber;
                     activityNumber++;
 
+                    const col = document.createElement("div");
+                    col.className = "col-4";
+
+                    const cardContainer = document.createElement("div");
+                    cardContainer.className = "card";
+
+                    const image = document.createElement("img");
+                    image.className = "card-img-top";
+                    image.src = '/activities/' + itinerary.location + ' ' + activity.name + '.jpg';
+
+                    const cardBody = document.createElement("div");
+                    cardBody.className = "card-body";
+
+                    const activityHeading = document.createElement("h5");
+                    activityHeading.innerText = activity.number + '. ' + activity.name;
+
+                    const cardText = document.createElement("p");
+                    cardText.className = "card-text";
+                    cardText.innerText = activity.description;
+
+                    const mapButton = document.createElement("a");
+                    mapButton.innerText = "View on Map";
+                    mapButton.className = "btn btn-primary";
+                    mapButton.style.margin = "3px";
+
+                    const infoButton = document.createElement("btn");
+                    infoButton.type = "button";
+                    infoButton.innerText = "More Information";
+                    infoButton.className = "btn btn-primary";
+                    infoButton.style.margin = "3px";
+
+
+                            //button type = "button" class="btn btn-light"
+
+
+                    col.appendChild(cardContainer);
+
+                    cardContainer.appendChild(image);
+                    cardContainer.appendChild(cardBody);
+
+                    cardBody.appendChild(activityHeading);
+                    cardBody.appendChild(cardText);
+                    cardBody.appendChild(mapButton);
+                    cardBody.appendChild(infoButton);
+
+                    //dayContainer.appendChild(col);
+                    lblResponse.appendChild(col);
+
+                    /*
                     const activityContainer = document.createElement("div");
                     activityContainer.className = "activity-container";
 
@@ -229,15 +285,17 @@
                     activityImage.src = '/activities/' + itinerary.location + ' ' + activity.name + '.jpg';
                     activityContainer.appendChild(activityImage);
 
-
                     dayContainer.appendChild(activityContainer);
+                    */
                 });
 
-                itineraryContainer.appendChild(dayContainer);
+                //lblResponse.appendChild(dayContainer);
+
+                //itineraryContainer.appendChild(dayContainer);
             });
 
-            var div = document.getElementById("lblResponse");
-            div.appendChild(itineraryContainer);
+            //var div = document.getElementById("lblResponse");
+            //div.appendChild(itineraryContainer);
         }
     </script>
 }
