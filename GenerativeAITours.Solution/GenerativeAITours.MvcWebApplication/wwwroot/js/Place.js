@@ -18,6 +18,7 @@ const Place = {
             //new City("",0, 0),		
             new Location("Minneapolis", 44.97, -93.26),
             new Location("New York", 40.7128, -74.0060),
+            new Location("Orlando", 28.538336, -81.379234),
             new Location("Raleigh", 35.7796, -78.6382),
 
             new Location("San Francisco", 37.7749, -122.4194),
@@ -45,6 +46,7 @@ const Place = {
             new Location("Glasgow", 55.8642, -4.2518),
             new Location("Gothenburg", 57.7089, 11.9746),
             new Location("Helsinki", 60.1699, 24.9384),
+            new Location("Ibiza", 39.0200, 1.4821),
             new Location("Istanbul", 41.0082, 28.9784),
             new Location("Kongsberg", 59.6721, 9.6460),
             new Location("Krakow", 50.06, 19.94),

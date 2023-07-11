@@ -1,5 +1,6 @@
-﻿
-const Map = {
+﻿var markers = [];
+
+const TourMap = {
 
     PlotLocations: function (json) {
 
@@ -17,6 +18,7 @@ const Map = {
 
         var latlng = new L.LatLng(location.latitude, location.longitude);
 
+        
         var map;
 
         if (map) {
@@ -47,12 +49,16 @@ const Map = {
 
                     // Add a popup with activity details to the marker
                     marker.bindPopup("<b>" + activity.name + "</b><br>" + activity.description);
+                    marker.id = activity.name;
+
+                    markers[activity.name] = marker;
                 });
             });
 
         }
 
     },
+
     GetLocationByLocationName: function (locationName) {
 
         //const locations = allLocations();
@@ -69,6 +75,11 @@ const Map = {
 
         return null; // City not found
 
+    },
+
+    ShowActivity: function (activityName) {
+        markers[activityName].openPopup();
+        document.getElementById('map').focus();
     }
     
 

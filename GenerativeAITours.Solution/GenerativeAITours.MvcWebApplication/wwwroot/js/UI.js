@@ -26,7 +26,7 @@
 
             // Add onclick event listener to the checkbox
             locationRadio.onclick = function () {
-                SetLocation(locations[i]);
+                Prompt.SetLocation(locations[i]);
             };
 
             // Create a new label element
@@ -63,7 +63,7 @@
 
             // Add onclick event listener to the checkbox
             checkbox.onclick = function () {
-                SetInterest(interests[i]);
+                Prompt.SetInterest(interests[i]);
             };
 
             // Create a new label element
@@ -93,7 +93,7 @@
             radio.autocomplete = 'off';
             radio.type = 'radio';
             radio.onclick = function () {
-                SetDays(durations[i]);
+                Prompt.SetDays(durations[i]);
             };
 
             const label = document.createElement('label');

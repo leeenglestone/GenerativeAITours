@@ -13,7 +13,6 @@ namespace GenerativeAITours.WebAPI.Controllers
     public class TourController : ControllerBase
     {
         private readonly HttpClient _httpClient;
-
         private readonly ILogger<TourController> _logger;
 
         public TourController(ILogger<TourController> logger)
@@ -22,52 +21,42 @@ namespace GenerativeAITours.WebAPI.Controllers
             _httpClient = new HttpClient();
         }
 
-        //[EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost(Name = "GetTour")]
         public async Task<ActionResult<string>> GetAsync([FromBody] string prompt)
         {
             try
             {
-                var promptCache = new PromptCacheLocalFileStorage();
+                Tour tour = null;
 
-                var cachedResponse = promptCache.GetCachedResponse(prompt);
+                IPromptCache promptCache = new PromptCacheLocalFileStorage();
+                var tourFromCache = promptCache.GetCachedResponse(prompt);
 
-                if (cachedResponse != null)
+                // If retrieved from cache
+                if (tourFromCache != null)
                 {
-                    var tour = Tour.ParseResult(cachedResponse);
-
-                    foreach (var activity in tour.Days.SelectMany(x => x.Activities))
-                    {
-                        var activityName = activity.Name;
-
-                        // Get images for tour activities
-                        // Check if file exists
-
-                        string locationActivity = tour.Location + " " + activityName;
-                        if (!ActivityImageExists(locationActivity))
-                        {
-                            await SaveActivityImageAsync(locationActivity);
-                        }
-                    }
-
-                    return Ok(tour);
+                    tour = Tour.ParseResult(tourFromCache);                   
+                }
+                else
+                {
+                    tour = await GetTourFromOpenAIAsync(prompt, promptCache);
                 }
 
-                string apiKey = "";
-                string model = "text-davinci-003";
-                //string model = "gpt-3.5-turbo"; 
-                string apiUrl = $"https://api.openai.com/v1/engines/{model}/completions";
-                //string apiUrl = "https://api.openai.com/v1/chat/completions";
+                await SaveActivityImagesIfDontExistAsync(tour);
+
+                return Ok(tour);
+                
+
+                /*
+                string apiKey = OpenAIConfig.ApiKey;
+                string model = OpenAIConfig.Model;
+                string apiUrl = OpenAIConfig.ApiUrl;
 
                 var requestPayload = new
                 {
                     prompt = prompt,
-                    //max_tokens = 500,
-                    //max_tokens = 1000,
-                    //model = "gpt-3.5-turbo",
-                    max_tokens = 2000,
-                    temperature = 0.7,
-                    n = 1
+                    max_tokens = OpenAIConfig.MaxTokens,
+                    temperature = OpenAIConfig.Temperature,
+                    n = OpenAIConfig.N
                 };
 
                 var jsonPayload = Newtonsoft.Json.JsonConvert.SerializeObject(requestPayload);
@@ -84,15 +73,20 @@ namespace GenerativeAITours.WebAPI.Controllers
                     var resultText = Tour.GetResultFromOpenAI(openAIResponseContent);
 
                     promptCache.SavePromptResponse(promptCache.HashPrompt(prompt), resultText);
-
                     var tour = Tour.ParseResult(resultText);
 
-                    return Ok(tour);
+                    await SaveActivityImagesIfDontExistAsync(tour);
+                    
                 }
                 else
                 {
                     return BadRequest("API request failed.");
                 }
+
+                return Ok(tour);
+
+                */
+
             }
             catch (Exception ex)
             {
@@ -100,9 +94,60 @@ namespace GenerativeAITours.WebAPI.Controllers
             }
         }
 
+        private async Task<Tour> GetTourFromOpenAIAsync(string prompt, IPromptCache promptCache)
+        {
+            string apiKey = OpenAIConfig.ApiKey;
+            string apiUrl = OpenAIConfig.ApiUrl;
+
+            var requestPayload = new
+            {
+                prompt = prompt,
+                max_tokens = OpenAIConfig.MaxTokens,
+                temperature = OpenAIConfig.Temperature,
+                n = OpenAIConfig.N
+            };
+
+            var jsonPayload = JsonConvert.SerializeObject(requestPayload);
+            var httpContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
+            var openAIResponse = await _httpClient.PostAsync(apiUrl, httpContent);
+
+            Tour tour;
+
+            if (openAIResponse.IsSuccessStatusCode)
+            {
+                var openAIResponseContent = await openAIResponse.Content.ReadAsStringAsync();
+                var resultText = Tour.GetResultFromOpenAI(openAIResponseContent);
+
+                promptCache.SavePromptResponse(promptCache.HashPrompt(prompt), resultText);
+                tour = Tour.ParseResult(resultText);
+            }
+            else
+            {
+                tour = null;
+            }
+
+            return tour;
+        }
+
+        private async Task SaveActivityImagesIfDontExistAsync(Tour tour)
+        {
+            foreach (var activity in tour.Days.SelectMany(x => x.Activities))
+            {
+                var activityName = activity.Name;
+                string locationActivity = tour.Location + " " + activityName;
+                if (!ActivityImageExists(locationActivity))
+                {
+                    await SaveActivityImageAsync(locationActivity);
+                }
+            }
+        }
+
         private bool ActivityImageExists(string activityName)
         {
-            //var path = $@"c:\temp\genaitours\{activityName.ToLower().Trim()}.jpg";
             var path = $@"C:\Development\GenerativeAITours\GenerativeAITours.Solution\GenerativeAITours.MvcWebApplication\wwwroot\activities\{activityName.ToLower().Trim()}.jpg";
 
             return System.IO.File.Exists(path);
@@ -111,7 +156,6 @@ namespace GenerativeAITours.WebAPI.Controllers
         private async Task SaveActivityImageAsync(string activityName)
         {
             var unsplashAccessKey = "iNAJIV5KuG9mjNsVU7NULfuMQmrybkQpExkcO2e_gfU";
-
             var unsplashApiUrl = $"https://api.unsplash.com/search/photos?client_id={unsplashAccessKey}&page={1}&per_page={1}&orientation=landscape&query={activityName}";
 
             var client = new WebClient();
@@ -121,7 +165,7 @@ namespace GenerativeAITours.WebAPI.Controllers
 
             List<string> urls = new List<string>();
 
-            foreach(var result in array["results"])
+            foreach (var result in array["results"])
             {
                 urls.Add(result.urls.regular.ToString());
             }
