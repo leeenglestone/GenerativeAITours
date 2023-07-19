@@ -42,6 +42,7 @@ const Place = {
             new Location("Cologne", 50.93, 6.9603),
             new Location("Copenhagen", 55.6761, 12.5683),
             new Location("Dublin", 53.3498, -6.2603),
+            new Location("Funchal", 32.7607, -16.9595),
             new Location("Geneva", 46.2044, 6.1432),
             new Location("Glasgow", 55.8642, -4.2518),
             new Location("Gothenburg", 57.7089, 11.9746),

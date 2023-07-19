@@ -1,6 +1,6 @@
 ﻿namespace GenerativeAITours.MvcWebApplication.Models
 {
-    public class TourViewModel
+    public class LocationViewModel
     {
         public string Country { get; set; }
         public string City { get; set; }

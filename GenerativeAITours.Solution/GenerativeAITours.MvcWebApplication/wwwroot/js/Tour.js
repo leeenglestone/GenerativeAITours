@@ -25,7 +25,7 @@ const Tour = {
             'Wildlife',
             'Wine Tasting'
         ];
-    },
+    }, 
 
     countryDestinations: function () {
         return [
@@ -60,6 +60,7 @@ const Tour = {
             'Berlin',
             'Cape Town',
             'Dubai',
+            'Funchal',
             'Lisbon',
             'London',
             'Madrid',
@@ -77,7 +78,7 @@ const Tour = {
             'Tokyo',
             'Toronto',
             'Venice',
-            'Vienna'            
+            'Vienna'
         ];
     }
 };

@@ -18,4 +18,8 @@
     <None Include="wwwroot\js\Prompt.js" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GenerativeAITours.Library\GenerativeAITours.Library.csproj" />
+  </ItemGroup>
+
 </Project>

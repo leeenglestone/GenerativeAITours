@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerativeAITours.MvcWebApplication", "GenerativeAITours.MvcWebApplication\GenerativeAITours.MvcWebApplication.csproj", "{72A9D3F5-D040-4555-8577-FD01FC5AD71D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerativeAITours.MvcWebApplication", "GenerativeAITours.MvcWebApplication\GenerativeAITours.MvcWebApplication.csproj", "{72A9D3F5-D040-4555-8577-FD01FC5AD71D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerativeAITours.WebAPI", "GenerativeAITours.WebAPI\GenerativeAITours.WebAPI.csproj", "{EBB1D761-3668-422D-A70E-1B19AF493728}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerativeAITours.WebAPI", "GenerativeAITours.WebAPI\GenerativeAITours.WebAPI.csproj", "{EBB1D761-3668-422D-A70E-1B19AF493728}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerativeAITours.Library", "GenerativeAITours.Library\GenerativeAITours.Library.csproj", "{5C6A4E13-E5B0-4055-8071-DB7CBC30F31D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{EBB1D761-3668-422D-A70E-1B19AF493728}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBB1D761-3668-422D-A70E-1B19AF493728}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBB1D761-3668-422D-A70E-1B19AF493728}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C6A4E13-E5B0-4055-8071-DB7CBC30F31D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C6A4E13-E5B0-4055-8071-DB7CBC30F31D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C6A4E13-E5B0-4055-8071-DB7CBC30F31D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C6A4E13-E5B0-4055-8071-DB7CBC30F31D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
